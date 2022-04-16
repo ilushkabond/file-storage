@@ -1,4 +1,4 @@
-export function testing(url: string): { command: string, params: Record<string, string> } {
+export function parseUrl(url: string): { command: string, params: Record<string, string> } {
     const args = url.split('?');
     const command = args[0];
     const params = {}
@@ -8,7 +8,7 @@ export function testing(url: string): { command: string, params: Record<string, 
             if (it[0] === '') {
                 return;
             }
-            params[it[0]] = it[1] || true
+            params[it[0]] = it[1] ?? true
         })
     }
 

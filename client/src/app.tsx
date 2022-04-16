@@ -13,9 +13,9 @@ interface FileInfo {
 function FileViewer() {
   //   const [dir, setDir] = useState({})
   const [files, setFiles] = useState<Array<FileInfo>>([]);
-  const [path, setPath] = useState("");
+  const [path, setPath] = useState("/");
   useEffect(() => {
-    fetch(`http://localhost:3000/${path}`)
+    fetch(`http://localhost:3000/dir?path=${path}`)
       .then((res) => res.json())
       .then((res) => {
         console.log(res);
@@ -24,16 +24,20 @@ function FileViewer() {
   }, [path]);
   return (
     <div>
-      <div className={styles.text} onClick={() => {
-        setPath((path) => {
-          const r = path.split("/");
-          r.pop();
-          return r.join("/");
-        });
-      }}
-      >
-        <span>..</span>
-      </div>
+      {
+        path != '/' && (
+          <div className={styles.text} onClick={() => {
+            setPath((path) => {
+              const r = path.split("/");
+              r.pop();
+              return r.join("/");
+            });
+          }}
+          >
+            <span>..</span>
+          </div>
+        )
+      }
       {files.map((file) => {
         return (
           <div
@@ -41,6 +45,16 @@ function FileViewer() {
             onClick={() => {
               if (file.isDirectory) {
                 setPath((path) => path + "/" + file.name);
+              } else {
+                fetch(`http://localhost:3000/download?path=${path + "/" + file.name}`)
+                .then((res) => res.blob())
+                .then((res) => {
+                  console.log(res);
+                  const a = document.createElement('a')
+                  a.download = file.name;
+                  a.href = URL.createObjectURL(res);
+                  a.click();
+                });
               }
             }}
           >
