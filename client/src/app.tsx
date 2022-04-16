@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
+import styles from './style.css'
 
 export function App() {
   return <FileViewer />;
 }
+
+interface FileInfo {
+  isDirectory: boolean,
+  name: string
+}
+
 function FileViewer() {
   //   const [dir, setDir] = useState({})
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<Array<FileInfo>>([]);
   const [path, setPath] = useState("");
   useEffect(() => {
     fetch(`http://localhost:3000/${path}`)
@@ -17,20 +24,20 @@ function FileViewer() {
   }, [path]);
   return (
     <div>
-      <div
-        onClick={() => {
-          setPath((path) => {
-            const r = path.split("/");
-            r.pop();
-            return r.join("/");
-          });
-        }}
+      <div className={styles.text} onClick={() => {
+        setPath((path) => {
+          const r = path.split("/");
+          r.pop();
+          return r.join("/");
+        });
+      }}
       >
         <span>..</span>
       </div>
       {files.map((file) => {
         return (
           <div
+            className={styles.text}
             onClick={() => {
               if (file.isDirectory) {
                 setPath((path) => path + "/" + file.name);
