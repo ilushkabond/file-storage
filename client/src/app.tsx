@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './style.css';
 
+/**
+ * Represents a FileViewer component.
+ * @FileViewer
+ * @return {React.Element}
+ */
 function FileViewer() {
   //   const [dir, setDir] = useState({})
   const [files, setFiles] = useState<Array<FileInfo>>([]);
   const [path, setPath] = useState('/');
   useEffect(() => {
     fetch(`http://localhost:3000/dir?path=${path}`)
-      .then((res) => res.json())
-      .then((res) => {
-        setFiles(res.files);
-      });
+        .then((res) => res.json())
+        .then((res) => {
+          setFiles(res.files);
+        });
   }, [path]);
   return (
     <div>
@@ -31,8 +36,9 @@ function FileViewer() {
           </button>
         )
       }
-      {files.map((file) => (
+      {files.map((file, index) => (
         <button
+          key={index}
           type="button"
           className={styles.text}
           onClick={() => {
@@ -40,13 +46,13 @@ function FileViewer() {
               setPath((lastPath) => `${lastPath}/${file.name}`);
             } else {
               fetch(`http://localhost:3000/download?path=${`${path}/${file.name}`}`)
-                .then((res) => res.blob())
-                .then((res) => {
-                  const a = document.createElement('a');
-                  a.download = file.name;
-                  a.href = URL.createObjectURL(res);
-                  a.click();
-                });
+                  .then((res) => res.blob())
+                  .then((res) => {
+                    const a = document.createElement('a');
+                    a.download = file.name;
+                    a.href = URL.createObjectURL(res);
+                    a.click();
+                  });
             }
           }}
         >
@@ -58,6 +64,11 @@ function FileViewer() {
   );
 }
 
+/**
+ * Represents a App component.
+ * @App
+ * @return {React.Element}
+ */
 export function App() {
   return <FileViewer />;
 }
